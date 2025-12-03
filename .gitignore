@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# Flask
+instance/
+.webassets-cache
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+CLAUDE.md
+
+# Environment variables
+.env
+.flaskenv
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keep the database in version control for this project
+# reservations.db is intentionally tracked
