@@ -38,10 +38,54 @@ def calculate_seat_price(row):
         return 10.00
 ```
 
+## Code Formatting & Linting
+
+We use **Black** for automatic code formatting and **Ruff** for fast linting.
+
+### Run Before Committing
+
+```bash
+# Format code with Black (100 char line length)
+black --line-length 100 .
+
+# Lint code with Ruff
+ruff check .
+
+# Auto-fix linting issues
+ruff check --fix .
+```
+
+### IDE Integration
+
+**VS Code**: Install extensions:
+- Black Formatter
+- Ruff
+
+Add to `.vscode/settings.json`:
+```json
+{
+  "editor.formatOnSave": true,
+  "python.formatting.provider": "black",
+  "python.linting.ruffEnabled": true
+}
+```
+
+**PyCharm**: Configure Black and Ruff in Settings → Tools → External Tools
+
+### Pre-commit Workflow
+
+1. Write code
+2. Run `black --line-length 100 .`
+3. Run `ruff check --fix .`
+4. Fix any remaining issues
+5. Commit changes
+
 ## Testing Checklist
 
 Before submitting PR:
 
+- [ ] Code formatted with Black
+- [ ] Ruff linting passes with no errors
 - [ ] All routes accessible
 - [ ] Forms validate correctly
 - [ ] Database operations work (create, read, delete)
