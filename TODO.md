@@ -3,91 +3,103 @@
 ## Project Status Tracker
 
 ### Team Contributions
-| Task | Assigned To | Status | Notes |
-|------|-------------|--------|-------|
-|      |             |        |       |
-|      |             |        |       |
-|      |             |        |       |
+| Task                    | Assigned To | Status | Notes                                    |
+|-------------------------|-------------|--------|------------------------------------------|
+| Helper Functions        | Jackson     | Done   | All 4 functions implemented              |
+| Templates & CSS         | Claude      | Done   | 5 templates + style.css with Mizzou theme |
+| Backend Integration     |             | Todo   | Connect templates to routes              |
+| Admin Authentication    |             | Todo   | Session management implementation        |
 
 ---
 
-## 1. Core Business Logic Implementation
+## 1. Core Business Logic Implementation ✅ COMPLETED
 
 ### Helper Functions (in app.py)
 
-- [ ] **Implement `calculate_seat_price(row)`**
-  - Define pricing zones (Front: rows 1-4, Middle: rows 5-8, Back: rows 9-12)
-  - Set price values for each zone
-  - Return appropriate price based on row number
+- [x] **Implement `calculate_seat_price(row)`**
+  - Zone-based pricing: Front $30, Middle $20, Back $15
+  - Input validation for rows 1-12
+  - Returns float price value
 
-- [ ] **Implement `generate_ticket_number()`**
-  - Generate unique format: HACK-XXXX-XXXX
-  - Ensure uniqueness across all reservations
-  - Use random alphanumeric characters
+- [x] **Implement `generate_ticket_number()`**
+  - Format: HACK-XXXX-XXXX (random 8-digit code)
+  - Uniqueness verified against database
+  - Regenerates on collision
 
-- [ ] **Implement `is_seat_available(row, column)`**
-  - Query Reservation model for seat at (row, column)
-  - Return True if available, False if reserved
+- [x] **Implement `is_seat_available(row, column)`**
+  - Queries Reservation model for seat at (row, column)
+  - Input validation for row (1-12) and column (1-4)
+  - Returns True if available, False if reserved
 
-- [ ] **Implement `get_total_sales()`**
-  - Query all reservations from database
-  - Calculate price for each seat using `calculate_seat_price()`
-  - Return total revenue sum
+- [x] **Implement `get_total_sales()`**
+  - Queries all reservations from database
+  - Calculates price for each seat using `calculate_seat_price()`
+  - Returns total revenue sum as float
 
 ---
 
-## 2. Template Development
+## 2. Template Development ✅ COMPLETED
 
 ### Base Template
 
-- [ ] **Create `templates/base.html`**
+- [x] **Create `templates/base.html`**
   - Include Bootstrap 5 CDN links
   - Create navigation bar with link to home (/)
   - Define block content area
   - Add footer if desired
+  - Flash message system integrated
+  - Mizzou gold (#F1B82D) themed navbar
 
 ### Page Templates
 
-- [ ] **Create `templates/index.html`**
+- [x] **Create `templates/index.html`**
   - Extend base.html
-  - Display welcome message
-  - Links to /reserve and /admin
+  - Display welcome message with hero section
+  - Links to /reserve and /admin (styled CTA cards)
+  - Zone pricing information table
   - Replace inline HTML in `/` route
 
-- [ ] **Create `templates/reserve.html`**
+- [x] **Create `templates/reserve.html`**
   - Extend base.html
   - Reservation form (passenger name, seat selection)
-  - Seat grid showing availability (12 rows × 4 columns)
-  - Display pricing by zone
+  - Interactive seat grid showing availability (12 rows × 4 columns)
+  - Display pricing by zone with color coding
+  - JavaScript for seat selection and price calculation
   - Show success/error messages
   - Replace inline HTML in `/reserve` route
 
-- [ ] **Create `templates/admin_login.html`**
+- [x] **Create `templates/admin_login.html`**
   - Extend base.html
   - Login form (username, password)
   - Error message display for failed login
+  - Mizzou gold top border styling
   - Replace inline HTML in `/admin` route
 
-- [ ] **Create `templates/admin_dashboard.html`**
+- [x] **Create `templates/admin_dashboard.html`**
   - Extend base.html
   - Display seating chart (12×4 grid with color coding)
+  - Statistics badges (total sales, seats reserved, seats available)
   - Show total sales from `get_total_sales()`
-  - List all reservations in table format
-  - Delete button for each reservation
+  - List all reservations in responsive table format
+  - Delete button for each reservation with confirmation
+  - Hover tooltips on reserved seats showing passenger names
   - Replace inline HTML in `/admin/dashboard` route
 
 ---
 
-## 3. Frontend Styling
+## 3. Frontend Styling ✅ COMPLETED
 
 ### CSS Development
 
-- [ ] **Create `static/style.css`**
+- [x] **Create `static/style.css`**
+  - CSS variables for Mizzou color palette (gold #F1B82D, black, green, red, blue)
   - Seating chart CSS Grid layout (12 rows × 4 columns)
-  - Color coding: green (available), red (reserved)
-  - Zone pricing visual indicators
-  - Responsive design considerations
-  - Custom styling to complement Bootstrap
+  - Color coding: green (available), red (reserved), blue (selected)
+  - Zone pricing visual indicators with light gold backgrounds
+  - Responsive design with breakpoints (60px → 50px → 45px seats)
+  - Custom Mizzou-themed styling to complement Bootstrap 5
+  - Interactive hover effects and transitions
+  - Admin dashboard statistics badges and table styling
 
 ---
 
@@ -188,23 +200,35 @@
 
 ---
 
-## 7. Documentation
+## 7. Documentation IN PROCESS
 
-- [ ] **Update README.md** (if exists)
-  - Installation instructions
-  - Running instructions
-  - Feature overview
-  - Screenshots if desired
+- [IP] **Update README.md**
+  - Installation instructions included
+  - Running instructions included
+  - Feature overview complete
+  - Project status section updated with completed templates
+  - Black and Ruff tools documented
+  - Template implementation marked as complete
 
-- [ ] **Update CONTRIBUTING.md**
-  - Code style guidelines
-  - Branch strategy
-  - PR process
+- [IP] **Update CONTRIBUTING.md**
+  - Code style guidelines (PEP 8)
+  - Black and Ruff integration added
+  - Branch strategy documented
+  - PR process defined
+  - Pre-commit workflow established
+  - IDE integration instructions
 
-- [ ] **Add code comments**
-  - Docstrings for all functions
-  - Inline comments for complex logic
-  - Follow PEP 8 standards
+- [IP] **Update TODO.md**
+  - Template development section marked complete
+  - Frontend styling section marked complete
+  - Team contributions table updated
+  - Documentation section updated
+
+- [IP] **Add code comments**
+  - Docstrings for all helper functions
+  - Inline comments for business logic
+  - PEP 8 compliant formatting
+  - HTML template comments for sections
 
 ---
 

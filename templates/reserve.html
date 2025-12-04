@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Reserve Seat - Hackathon Bus Reservation{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Reserve Your Seat</h2>
+
+<div class="row">
+    <!-- LEFT COLUMN: Seating Chart -->
+    <div class="col-lg-7 mb-4">
+        <div class="seating-chart-container">
+            <h4 class="text-center mb-3">Bus Seating Chart</h4>
+
+            <!-- Front Zone (Rows 1-4) -->
+            <div class="zone zone-front">
+                <div class="zone-label">
+                    Front Zone - Rows 1-4
+                    <span class="zone-price">$30.00</span>
+                </div>
+                <div class="seating-chart" id="front-zone">
+                    {% for row in range(1, 5) %}
+                        {% for col in range(1, 5) %}
+                            {% if availability is defined and availability[row-1][col-1] == False %}
+                                <div class="seat seat-reserved"
+                                     data-row="{{ row }}"
+                                     data-column="{{ col }}"
+                                     data-available="false">
+                                    {{ row }}-{{ col }}
+                                </div>
+                            {% else %}
+                                <div class="seat seat-available"
+                                     data-row="{{ row }}"
+                                     data-column="{{ col }}"
+                                     data-available="true">
+                                    {{ row }}-{{ col }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Middle Zone (Rows 5-8) -->
+            <div class="zone zone-middle">
+                <div class="zone-label">
+                    Middle Zone - Rows 5-8
+                    <span class="zone-price">$20.00</span>
+                </div>
+                <div class="seating-chart" id="middle-zone">
+                    {% for row in range(5, 9) %}
+                        {% for col in range(1, 5) %}
+                            {% if availability is defined and availability[row-1][col-1] == False %}
+                                <div class="seat seat-reserved"
+                                     data-row="{{ row }}"
+                                     data-column="{{ col }}"
+                                     data-available="false">
+                                    {{ row }}-{{ col }}
+                                </div>
+                            {% else %}
+                                <div class="seat seat-available"
+                                     data-row="{{ row }}"
+                                     data-column="{{ col }}"
+                                     data-available="true">
+                                    {{ row }}-{{ col }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Back Zone (Rows 9-12) -->
+            <div class="zone zone-back">
+                <div class="zone-label">
+                    Back Zone - Rows 9-12
+                    <span class="zone-price">$15.00</span>
+                </div>
+                <div class="seating-chart" id="back-zone">
+                    {% for row in range(9, 13) %}
+                        {% for col in range(1, 5) %}
+                            {% if availability is defined and availability[row-1][col-1] == False %}
+                                <div class="seat seat-reserved"
+                                     data-row="{{ row }}"
+                                     data-column="{{ col }}"
+                                     data-available="false">
+                                    {{ row }}-{{ col }}
+                                </div>
+                            {% else %}
+                                <div class="seat seat-available"
+                                     data-row="{{ row }}"
+                                     data-column="{{ col }}"
+                                     data-available="true">
+                                    {{ row }}-{{ col }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Seat Legend -->
+            <div class="seat-legend">
+                <div class="legend-item">
+                    <div class="legend-box legend-available"></div>
+                    <span>Available</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box legend-reserved"></div>
+                    <span>Reserved</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box legend-selected"></div>
+                    <span>Selected</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Reservation Form -->
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header bg-mizzou-gold text-dark">
+                <h5 class="mb-0">Passenger Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('reserve') }}" id="reservation-form">
+                    <!-- Passenger Name -->
+                    <div class="mb-3">
+                        <label for="passenger_name" class="form-label">Full Name</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="passenger_name"
+                            name="passenger_name"
+                            required
+                            minlength="2"
+                            maxlength="50"
+                            placeholder="Enter your full name"
+                        >
+                        <div class="form-text">Name as it appears on your ID</div>
+                    </div>
+
+                    <!-- Hidden Fields for Seat Selection -->
+                    <input type="hidden" id="seat_row" name="seat_row" value="">
+                    <input type="hidden" id="seat_column" name="seat_column" value="">
+
+                    <!-- Selected Seat Display -->
+                    <div class="selected-seat-display mb-3" id="seat-display" style="display: none;">
+                        <h6 class="mb-2">Selected Seat</h6>
+                        <p class="mb-1">
+                            <strong>Seat:</strong> <span id="selected-seat-text">None</span>
+                        </p>
+                        <p class="mb-0">
+                            <strong>Price:</strong> <span class="price-display" id="selected-price-text">$0.00</span>
+                        </p>
+                    </div>
+
+                    <!-- Alert if no seat selected -->
+                    <div class="alert alert-warning" id="no-seat-alert">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+                            <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>
+                            <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+                        </svg>
+                        Please select a seat from the seating chart
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-mizzou-gold btn-lg" id="submit-btn" disabled>
+                            Complete Reservation
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Back to Home Link -->
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('index') }}" class="text-decoration-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                        </svg>
+                        Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Seat selection JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        const seats = document.querySelectorAll('.seat-available');
+        const seatRowInput = document.getElementById('seat_row');
+        const seatColumnInput = document.getElementById('seat_column');
+        const selectedSeatText = document.getElementById('selected-seat-text');
+        const selectedPriceText = document.getElementById('selected-price-text');
+        const seatDisplay = document.getElementById('seat-display');
+        const noSeatAlert = document.getElementById('no-seat-alert');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // Price calculation function (matches backend logic)
+        function calculatePrice(row) {
+            if (row >= 1 && row <= 4) {
+                return 30.00;
+            } else if (row >= 5 && row <= 8) {
+                return 20.00;
+            } else if (row >= 9 && row <= 12) {
+                return 15.00;
+            }
+            return 0.00;
+        }
+
+        // Add click handler to each available seat
+        seats.forEach(function(seat) {
+            seat.addEventListener('click', function() {
+                const row = parseInt(this.getAttribute('data-row'));
+                const column = parseInt(this.getAttribute('data-column'));
+
+                // Remove previous selection
+                document.querySelectorAll('.seat-selected').forEach(function(s) {
+                    s.classList.remove('seat-selected');
+                    s.classList.add('seat-available');
+                });
+
+                // Mark this seat as selected
+                this.classList.remove('seat-available');
+                this.classList.add('seat-selected');
+
+                // Update hidden form fields
+                seatRowInput.value = row;
+                seatColumnInput.value = column;
+
+                // Calculate price
+                const price = calculatePrice(row);
+
+                // Update display
+                selectedSeatText.textContent = 'Row ' + row + ', Column ' + column;
+                selectedPriceText.textContent = '$' + price.toFixed(2);
+
+                // Show seat display, hide alert
+                seatDisplay.style.display = 'block';
+                noSeatAlert.style.display = 'none';
+
+                // Enable submit button
+                submitBtn.disabled = false;
+            });
+        });
+
+        // Form validation before submit
+        document.getElementById('reservation-form').addEventListener('submit', function(e) {
+            if (!seatRowInput.value || !seatColumnInput.value) {
+                e.preventDefault();
+                alert('Please select a seat before submitting!');
+                return false;
+            }
+        });
+    });
+</script>
+{% endblock %}
