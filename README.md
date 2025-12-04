@@ -71,7 +71,7 @@ ruff check --fix .
 - [x] Core business logic (seat pricing, ticket generation, availability check, sales calculation)
 - [x] Database schema and SQLAlchemy models
 - [x] Code formatting tools (Black & Ruff)
-- [x] Documentation (README, CONTRIBUTING, CLAUDE.md, TODO.md)
+- [x] Documentation (README, CONTRIBUTING, TODO.md)
 - [x] HTML templates with Bootstrap 5 and Mizzou theming
 - [x] Responsive seating chart visualization (CSS Grid)
 - [x] Interactive seat selection with JavaScript
