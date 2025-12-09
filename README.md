@@ -11,14 +11,8 @@ Flask web app for managing bus seat reservations (48 seats: 12 rows × 4 columns
 ## Quick Start
 
 ```bash
-# Setup
-python -m venv venv
-venv\Scripts\activate          # Windows
-source venv/bin/activate       # Mac/Linux
-pip install -r requirements.txt
-
 # Run
-python app.py
+docker-compose up --build
 ```
 
 Visit `http://localhost:5000`
