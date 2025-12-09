@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: bus-reservation-app
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./reservations.db:/app/reservations.db
+    environment:
+      - FLASK_ENV=production
