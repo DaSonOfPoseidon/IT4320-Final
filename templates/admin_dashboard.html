@@ -175,20 +175,20 @@
                             <tr>
                                 <td>{{ reservation.id }}</td>
                                 <td>{{ reservation.passengerName }}</td>
-                                <td>Row {{ reservation.seatRow }}, Col {{ reservation.seatColumn }}</td>
+                                <td>Row {{ reservation.seatRow + 1 }}, Col {{ reservation.seatColumn + 1 }}</td>
                                 <td>
-                                    {% if reservation.seatRow >= 1 and reservation.seatRow <= 4 %}
+                                    {% if reservation.seatRow >= 0 and reservation.seatRow <= 3 %}
                                         <span class="badge bg-success">Front</span>
-                                    {% elif reservation.seatRow >= 5 and reservation.seatRow <= 8 %}
+                                    {% elif reservation.seatRow >= 4 and reservation.seatRow <= 7 %}
                                         <span class="badge bg-primary">Middle</span>
                                     {% else %}
                                         <span class="badge bg-secondary">Back</span>
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if reservation.seatRow >= 1 and reservation.seatRow <= 4 %}
+                                    {% if reservation.seatRow >= 0 and reservation.seatRow <= 3 %}
                                         $30.00
-                                    {% elif reservation.seatRow >= 5 and reservation.seatRow <= 8 %}
+                                    {% elif reservation.seatRow >= 4 and reservation.seatRow <= 7 %}
                                         $20.00
                                     {% else %}
                                         $15.00
@@ -198,9 +198,9 @@
                                 <td>{{ reservation.created.strftime('%Y-%m-%d %H:%M') if reservation.created else 'N/A' }}</td>
                                 <td class="table-actions">
                                     <form method="POST"
-                                          action="{{ url_for('admin_delete', id=reservation.id) }}"
+                                          action="{{ url_for('admin_delete', reservation_id=reservation.id) }}"
                                           style="display: inline;"
-                                          onsubmit="return confirmDelete('{{ reservation.passengerName }}', 'Row {{ reservation.seatRow }}, Col {{ reservation.seatColumn }}');">
+                                          onsubmit="return confirmDelete('{{ reservation.passengerName }}', 'Row {{ reservation.seatRow + 1 }}, Col {{ reservation.seatColumn + 1 }}');">
                                         <button type="submit" class="btn btn-danger btn-sm btn-delete">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                                                 <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
