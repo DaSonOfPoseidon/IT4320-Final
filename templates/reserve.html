@@ -15,7 +15,7 @@
             <div class="zone zone-front">
                 <div class="zone-label">
                     Front Zone - Rows 1-4
-                    <span class="zone-price">$30.00</span>
+                    <span class="zone-price">Col 1,4: $100 | Col 2: $75 | Col 3: $50</span>
                 </div>
                 <div class="seating-chart" id="front-zone">
                     {% for row in range(1, 5) %}
@@ -44,7 +44,7 @@
             <div class="zone zone-middle">
                 <div class="zone-label">
                     Middle Zone - Rows 5-8
-                    <span class="zone-price">$20.00</span>
+                    <span class="zone-price">Col 1,4: $100 | Col 2: $75 | Col 3: $50</span>
                 </div>
                 <div class="seating-chart" id="middle-zone">
                     {% for row in range(5, 9) %}
@@ -73,7 +73,7 @@
             <div class="zone zone-back">
                 <div class="zone-label">
                     Back Zone - Rows 9-12
-                    <span class="zone-price">$15.00</span>
+                    <span class="zone-price">Col 1,4: $100 | Col 2: $75 | Col 3: $50</span>
                 </div>
                 <div class="seating-chart" id="back-zone">
                     {% for row in range(9, 13) %}
@@ -200,14 +200,15 @@
         const noSeatAlert = document.getElementById('no-seat-alert');
         const submitBtn = document.getElementById('submit-btn');
 
-        // Price calculation function (matches backend logic)
-        function calculatePrice(row) {
-            if (row >= 1 && row <= 4) {
-                return 30.00;
-            } else if (row >= 5 && row <= 8) {
-                return 20.00;
-            } else if (row >= 9 && row <= 12) {
-                return 15.00;
+        // Price calculation function (matches backend cost matrix)
+        function calculatePrice(row, column) {
+            // Column-based pricing: [100, 75, 50, 100]
+            if (column === 1 || column === 4) {
+                return 100.00;  // Aisle seats
+            } else if (column === 2) {
+                return 75.00;   // Middle seat
+            } else if (column === 3) {
+                return 50.00;   // Center seat
             }
             return 0.00;
         }
@@ -232,8 +233,8 @@
                 seatRowInput.value = row;
                 seatColumnInput.value = column;
 
-                // Calculate price
-                const price = calculatePrice(row);
+                // Calculate price based on column
+                const price = calculatePrice(row, column);
 
                 // Update display
                 selectedSeatText.textContent = 'Row ' + row + ', Column ' + column;

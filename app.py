@@ -4,12 +4,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import random
 import os
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "your-secret-key-here"  # Change this in production
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "tigolbitties")  # Change in production!
 
 # Use absolute path to database file in the project root
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -91,7 +90,7 @@ def reserve():
             return redirect(url_for("reserve"))
 
         # Generate ticket and create reservation (store as 0-based in database)
-        ticket_number = generate_ticket_number()
+        ticket_number = generate_ticket_number(passenger_name)
         new_reservation = Reservation(
             passengerName=passenger_name,
             seatRow=seat_row,
@@ -102,8 +101,8 @@ def reserve():
         db.session.add(new_reservation)
         db.session.commit()
 
-        # Calculate price for confirmation message (using 0-based row)
-        price = calculate_seat_price(seat_row)
+        # Calculate price for confirmation message (using 0-based row and column)
+        price = calculate_seat_price(seat_row, seat_column)
 
         flash(
             f"Reservation successful! {passenger_name}, your seat {seat_row_display}-{seat_column_display} "
@@ -211,12 +210,24 @@ def admin_logout():
 # Helper functions
 
 
-def calculate_seat_price(row):
+def get_cost_matrix():
     """
-    Calculate the price of a seat based on its row (zone-based pricing)
+    Get the seat pricing cost matrix
+
+    Returns:
+        list: 12x4 matrix where cost_matrix[row][col] is the price for that seat
+    """
+    cost_matrix = [[100, 75, 50, 100] for row in range(12)]
+    return cost_matrix
+
+
+def calculate_seat_price(row, column):
+    """
+    Calculate the price of a seat based on its position using cost matrix
 
     Args:
         row (int): The row number (0-11, 0-based index)
+        column (int): The column number (0-3, 0-based index)
 
     Returns:
         float: The price for the seat
@@ -224,33 +235,44 @@ def calculate_seat_price(row):
     # Input validation
     if row < 0 or row > 11:
         raise ValueError("Row must be between 0 and 11")
+    if column < 0 or column > 3:
+        raise ValueError("Column must be between 0 and 3")
 
-    # Zone-based pricing (0-based: rows 0-3, 4-7, 8-11)
-    if row <= 3:
-        return 30.0  # Front zone (rows 0-3)
-    elif row <= 7:
-        return 20.0  # Middle zone (rows 4-7)
-    else:
-        return 15.0  # Back zone (rows 8-11)
+    # Get price from cost matrix
+    cost_matrix = get_cost_matrix()
+    return float(cost_matrix[row][column])
 
 
-def generate_ticket_number():
+def generate_ticket_number(passenger_name):
     """
-    Generate a unique e-ticket number
+    Generate e-ticket number based on passenger name
+
+    Pattern: Interleave passenger name letters with "INFOTC4320"
+    Example: "Alice" -> AIlNiFcOeTC4320
+
+    Args:
+        passenger_name (str): Passenger's full name
 
     Returns:
-        str: Unique ticket number (e.g., HACK-1234-5678)
+        str: E-ticket number based on passenger name
     """
-    while True:
-        # Generate two 4-digit random numbers
-        part1 = random.randint(1000, 9999)
-        part2 = random.randint(1000, 9999)
-        ticket = f"HACK-{part1}-{part2}"
+    separator_string = "INFOTC4320"
 
-        # Check if ticket number already exists in database
-        existing = Reservation.query.filter_by(eTicketNumber=ticket).first()
-        if not existing:
-            return ticket
+    # Start with first letter (uppercase)
+    ticket = passenger_name[0].upper()
+
+    # Get remaining letters (lowercase)
+    remaining_letters = passenger_name[1:].lower()
+
+    # Interleave remaining letters with separator string
+    max_length = max(len(remaining_letters), len(separator_string))
+    for i in range(max_length):
+        if i < len(separator_string):
+            ticket += separator_string[i]
+        if i < len(remaining_letters):
+            ticket += remaining_letters[i]
+
+    return ticket
 
 
 def is_seat_available(row, column):
@@ -288,9 +310,9 @@ def get_total_sales():
     # Get all reservations
     reservations = Reservation.query.all()
 
-    # Calculate price for each reservation
+    # Calculate price for each reservation using row and column
     for reservation in reservations:
-        price = calculate_seat_price(reservation.seatRow)
+        price = calculate_seat_price(reservation.seatRow, reservation.seatColumn)
         total += price
 
     return total
@@ -345,4 +367,4 @@ if __name__ == "__main__":
         db.create_all()
 
     # Run in debug mode for development
-    app.run(debug=True, host="127.0.0.1", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5000)
