@@ -11,91 +11,43 @@
         <div class="seating-chart-container">
             <h4 class="text-center mb-3">Bus Seating Chart</h4>
 
-            <!-- Front Zone (Rows 1-4) -->
-            <div class="zone zone-front">
-                <div class="zone-label">
-                    Front Zone - Rows 1-4
-                    <span class="zone-price">$30.00</span>
-                </div>
-                <div class="seating-chart" id="front-zone">
-                    {% for row in range(1, 5) %}
-                        {% for col in range(1, 5) %}
-                            {% if availability is defined and availability[row-1][col-1] == False %}
-                                <div class="seat seat-reserved"
-                                     data-row="{{ row }}"
-                                     data-column="{{ col }}"
-                                     data-available="false">
-                                    {{ row }}-{{ col }}
-                                </div>
-                            {% else %}
-                                <div class="seat seat-available"
-                                     data-row="{{ row }}"
-                                     data-column="{{ col }}"
-                                     data-available="true">
-                                    {{ row }}-{{ col }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    {% endfor %}
+            <!-- Pricing Legend -->
+            <div class="pricing-legend mb-3">
+                <h6 class="text-center mb-2">Seat Pricing</h6>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <div class="pricing-item">
+                        <span class="pricing-badge window-pricing">Window: $100</span>
+                    </div>
+                    <div class="pricing-item">
+                        <span class="pricing-badge left-aisle-pricing">Left Aisle: $75</span>
+                    </div>
+                    <div class="pricing-item">
+                        <span class="pricing-badge right-aisle-pricing">Right Aisle: $50</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Middle Zone (Rows 5-8) -->
-            <div class="zone zone-middle">
-                <div class="zone-label">
-                    Middle Zone - Rows 5-8
-                    <span class="zone-price">$20.00</span>
-                </div>
-                <div class="seating-chart" id="middle-zone">
-                    {% for row in range(5, 9) %}
-                        {% for col in range(1, 5) %}
-                            {% if availability is defined and availability[row-1][col-1] == False %}
-                                <div class="seat seat-reserved"
-                                     data-row="{{ row }}"
-                                     data-column="{{ col }}"
-                                     data-available="false">
-                                    {{ row }}-{{ col }}
-                                </div>
-                            {% else %}
-                                <div class="seat seat-available"
-                                     data-row="{{ row }}"
-                                     data-column="{{ col }}"
-                                     data-available="true">
-                                    {{ row }}-{{ col }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+            <!-- Unified Seating Chart -->
+            <div class="seating-chart">
+                {% for row in range(1, 13) %}
+                    {% for col in range(1, 5) %}
+                        {% if availability is defined and availability[row-1][col-1] == False %}
+                            <div class="seat seat-reserved"
+                                 data-row="{{ row }}"
+                                 data-column="{{ col }}"
+                                 data-available="false">
+                                {{ row }}-{{ col }}
+                            </div>
+                        {% else %}
+                            <div class="seat seat-available"
+                                 data-row="{{ row }}"
+                                 data-column="{{ col }}"
+                                 data-available="true">
+                                {{ row }}-{{ col }}
+                            </div>
+                        {% endif %}
                     {% endfor %}
-                </div>
-            </div>
-
-            <!-- Back Zone (Rows 9-12) -->
-            <div class="zone zone-back">
-                <div class="zone-label">
-                    Back Zone - Rows 9-12
-                    <span class="zone-price">$15.00</span>
-                </div>
-                <div class="seating-chart" id="back-zone">
-                    {% for row in range(9, 13) %}
-                        {% for col in range(1, 5) %}
-                            {% if availability is defined and availability[row-1][col-1] == False %}
-                                <div class="seat seat-reserved"
-                                     data-row="{{ row }}"
-                                     data-column="{{ col }}"
-                                     data-available="false">
-                                    {{ row }}-{{ col }}
-                                </div>
-                            {% else %}
-                                <div class="seat seat-available"
-                                     data-row="{{ row }}"
-                                     data-column="{{ col }}"
-                                     data-available="true">
-                                    {{ row }}-{{ col }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    {% endfor %}
-                </div>
+                {% endfor %}
             </div>
 
             <!-- Seat Legend -->
@@ -200,14 +152,15 @@
         const noSeatAlert = document.getElementById('no-seat-alert');
         const submitBtn = document.getElementById('submit-btn');
 
-        // Price calculation function (matches backend logic)
-        function calculatePrice(row) {
-            if (row >= 1 && row <= 4) {
-                return 30.00;
-            } else if (row >= 5 && row <= 8) {
-                return 20.00;
-            } else if (row >= 9 && row <= 12) {
-                return 15.00;
+        // Price calculation function (matches backend cost matrix)
+        function calculatePrice(row, column) {
+            // Column-based pricing: [100, 75, 50, 100]
+            if (column === 1 || column === 4) {
+                return 100.00;  // Window seats
+            } else if (column === 2) {
+                return 75.00;   // Middle seat
+            } else if (column === 3) {
+                return 50.00;   // Center seat
             }
             return 0.00;
         }
@@ -232,8 +185,8 @@
                 seatRowInput.value = row;
                 seatColumnInput.value = column;
 
-                // Calculate price
-                const price = calculatePrice(row);
+                // Calculate price based on column
+                const price = calculatePrice(row, column);
 
                 // Update display
                 selectedSeatText.textContent = 'Row ' + row + ', Column ' + column;

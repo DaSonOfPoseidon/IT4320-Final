@@ -5,7 +5,7 @@
 ```bash
 python -m venv venv
 venv\Scripts\activate  # Windows | source venv/bin/activate (Mac/Linux)
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 python app.py
 ```
 
@@ -48,14 +48,11 @@ We use **Black** for automatic code formatting and **Ruff** for fast linting.
 # Format code with Black (100 char line length)
 black --line-length 100 .
 
-# Lint code with Ruff
-ruff check .
-
 # Auto-fix linting issues
 ruff check --fix .
 ```
 
-### IDE Integration
+### IDE Integration (Optional)
 
 **VS Code**: Install extensions:
 - Black Formatter
@@ -82,7 +79,7 @@ Add to `.vscode/settings.json`:
 
 ## Testing Checklist
 
-Before submitting PR:
+Before submitting:
 
 - [ ] Code formatted with Black
 - [ ] Ruff linting passes with no errors
@@ -93,6 +90,8 @@ Before submitting PR:
 - [ ] Seat availability checked
 - [ ] E-ticket generation unique
 - [ ] Total sales accurate
+
+Automated testing is planned but currently TBD
 
 **Key Scenarios**: Reservation flow, admin dashboard, error handling (duplicate seats, invalid input, bad login)
 
@@ -107,15 +106,6 @@ feat: add seat reservation form with validation
 fix: prevent duplicate seat reservations
 docs: update README with pricing structure
 ```
-
-## Pull Requests
-
-1. Follow code style
-2. Test thoroughly
-3. Update docs
-4. Keep branch current with `main`
-5. Get one team review
-6. Merge and delete branch
 
 ## Common Tasks
 

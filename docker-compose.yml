@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    container_name: bus-reservation-app
+    ports:
+      - "4320:5000"
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_DEBUG=0
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
