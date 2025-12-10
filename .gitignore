@@ -27,6 +27,8 @@ CLAUDE.md
 # Environment variables
 .env
 .flaskenv
+.claude/
+
 
 # OS
 .DS_Store
@@ -34,3 +36,4 @@ Thumbs.db
 
 # Keep the database in version control for this project
 # reservations.db is intentionally tracked
+settings.local*
