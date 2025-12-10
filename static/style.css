@@ -1,13 +1,127 @@
 /* =================================================================
-   CSS Variables - Mizzou Color Palette
+   CSS Variables - Mizzou Color Palette & Theme Colors
    ================================================================= */
 :root {
+  /* Brand Colors */
   --mizzou-gold: #F1B82D;
+  --mizzou-gold-dark: #d9a426;
   --mizzou-black: #000000;
+
+  /* Seat Colors */
   --seat-available: #198754;
   --seat-reserved: #DC3545;
   --seat-selected: #0D6EFD;
   --seat-size: 60px;
+
+  /* Background Colors */
+  --bg-body: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #f8f9fa;
+  --bg-input: #FFFFFF;
+
+  /* Text Colors */
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-muted: #6c757d;
+
+  /* Border Colors */
+  --border-color: #dee2e6;
+  --border-input: #ced4da;
+
+  /* Table Colors */
+  --table-stripe: #f8f9fa;
+  --table-hover: #f1f1f1;
+  --table-border: #dee2e6;
+
+  /* Navbar Colors */
+  --navbar-bg: var(--mizzou-gold);
+  --navbar-text: var(--mizzou-black);
+
+  /* Hero Gradient */
+  --hero-gradient-start: var(--mizzou-gold);
+  --hero-gradient-end: #d9a426;
+
+  /* Pricing Badge Colors */
+  --badge-window-bg: #fff3cd;
+  --badge-window-border: #ffc107;
+  --badge-left-aisle-bg: #cfe2ff;
+  --badge-left-aisle-border: #0d6efd;
+  --badge-right-aisle-bg: #d1e7dd;
+  --badge-right-aisle-border: #198754;
+
+  /* Alert Colors */
+  --alert-warning-bg: #fff3cd;
+  --alert-warning-border: #ffecb5;
+  --alert-warning-text: #664d03;
+
+  /* Shadow Colors */
+  --shadow-sm: rgba(0, 0, 0, 0.1);
+  --shadow-md: rgba(0, 0, 0, 0.2);
+
+  /* Additional UI Colors */
+  --selected-seat-display-bg: #e9ecef;
+  --empty-state-color: #6c757d;
+  --tooltip-bg: rgba(0, 0, 0, 0.8);
+}
+
+/* =================================================================
+   Dark Mode Theme Overrides
+   ================================================================= */
+[data-theme="dark"] {
+  /* Background Colors */
+  --bg-body: #1a1a1a;
+  --bg-card: #2d2d2d;
+  --bg-elevated: #3a3a3a;
+  --bg-input: #2d2d2d;
+
+  /* Text Colors */
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-muted: #909090;
+
+  /* Border Colors */
+  --border-color: #404040;
+  --border-input: #505050;
+
+  /* Table Colors */
+  --table-stripe: #252525;
+  --table-hover: #3a3a3a;
+  --table-border: #404040;
+
+  /* Seat Colors (brighter for dark mode visibility) */
+  --seat-available: #22c55e;
+  --seat-reserved: #ef4444;
+  --seat-selected: #3b82f6;
+
+  /* Navbar (keep gold, adjust if needed) */
+  --navbar-bg: var(--mizzou-gold);
+  --navbar-text: var(--mizzou-black);
+
+  /* Hero Gradient */
+  --hero-gradient-start: var(--mizzou-gold);
+  --hero-gradient-end: #c99620;
+
+  /* Pricing Badge Colors (dark backgrounds with colored borders) */
+  --badge-window-bg: #4a4010;
+  --badge-window-border: #ffc107;
+  --badge-left-aisle-bg: #1e3a5f;
+  --badge-left-aisle-border: #0d6efd;
+  --badge-right-aisle-bg: #1e4a2f;
+  --badge-right-aisle-border: #198754;
+
+  /* Alert Colors */
+  --alert-warning-bg: #4a4010;
+  --alert-warning-border: #5a5020;
+  --alert-warning-text: #ffc107;
+
+  /* Shadow Colors */
+  --shadow-sm: rgba(0, 0, 0, 0.3);
+  --shadow-md: rgba(0, 0, 0, 0.5);
+
+  /* Additional UI Colors */
+  --selected-seat-display-bg: #3a3a3a;
+  --empty-state-color: #b0b0b0;
+  --tooltip-bg: rgba(60, 60, 60, 0.95);
 }
 
 /* =================================================================
@@ -17,6 +131,9 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 main {
@@ -47,7 +164,7 @@ main {
 }
 
 .btn-mizzou-gold:hover {
-  background-color: #d9a426;
+  background-color: var(--mizzou-gold-dark);
   color: var(--mizzou-black);
 }
 
@@ -63,10 +180,11 @@ main {
    Seating Chart Styles
    ================================================================= */
 .seating-chart-container {
-  background: #f8f9fa;
+  background: var(--bg-elevated);
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
+  transition: background-color 0.3s ease;
 }
 
 .seating-chart {
@@ -100,7 +218,7 @@ main {
 
 .seat-available:hover {
   transform: scale(1.1);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px var(--shadow-md);
 }
 
 .seat-reserved {
@@ -121,15 +239,16 @@ main {
 
 /* Pricing Legend */
 .pricing-legend {
-  background-color: #f8f9fa;
+  background-color: var(--bg-elevated);
   border: 2px solid var(--mizzou-gold);
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 20px;
+  transition: background-color 0.3s ease;
 }
 
 .pricing-legend h6 {
-  color: var(--mizzou-black);
+  color: var(--text-primary);
   margin-bottom: 10px;
   font-weight: 600;
 }
@@ -146,23 +265,24 @@ main {
   border-radius: 20px;
   font-weight: 600;
   font-size: 14px;
-  color: var(--mizzou-black);
+  color: var(--text-primary);
   border: 2px solid;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .pricing-badge.window-pricing {
-  background-color: #fff3cd;
-  border-color: #ffc107;
+  background-color: var(--badge-window-bg);
+  border-color: var(--badge-window-border);
 }
 
 .pricing-badge.left-aisle-pricing {
-  background-color: #cfe2ff;
-  border-color: #0d6efd;
+  background-color: var(--badge-left-aisle-bg);
+  border-color: var(--badge-left-aisle-border);
 }
 
 .pricing-badge.right-aisle-pricing {
-  background-color: #d1e7dd;
-  border-color: #198754;
+  background-color: var(--badge-right-aisle-bg);
+  border-color: var(--badge-right-aisle-border);
 }
 
 /* Seat Legend */
@@ -213,7 +333,7 @@ main {
 
 .form-label {
   font-weight: 600;
-  color: var(--mizzou-black);
+  color: var(--text-primary);
 }
 
 /* =================================================================
@@ -226,7 +346,7 @@ main {
 
 .card-cta:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px var(--shadow-sm);
 }
 
 .card-gold {
@@ -251,6 +371,18 @@ main {
   margin: 10px;
 }
 
+.stats-badge .small,
+.stats-badge small {
+  color: var(--mizzou-black) !important;
+  opacity: 0.8;
+}
+
+[data-theme="dark"] .stats-badge .small,
+[data-theme="dark"] .stats-badge small {
+  color: var(--mizzou-black) !important;
+  opacity: 0.9;
+}
+
 .table-actions {
   white-space: nowrap;
 }
@@ -267,7 +399,7 @@ main {
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--tooltip-bg);
   color: white;
   padding: 5px 10px;
   border-radius: 4px;
@@ -350,12 +482,13 @@ main {
 
 /* Hero section on index page */
 .hero-section {
-  background: linear-gradient(135deg, var(--mizzou-gold) 0%, #d9a426 100%);
+  background: linear-gradient(135deg, var(--hero-gradient-start) 0%, var(--hero-gradient-end) 100%);
   color: var(--mizzou-black);
   padding: 40px 20px;
   border-radius: 8px;
   margin-bottom: 30px;
   text-align: center;
+  transition: background 0.3s ease;
 }
 
 .hero-section h1 {
@@ -368,16 +501,19 @@ main {
   max-width: 400px;
   margin: 50px auto;
   border-top: 5px solid var(--mizzou-gold);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px var(--shadow-sm);
+  background-color: var(--bg-card);
+  transition: background-color 0.3s ease;
 }
 
 /* Selected seat display in reservation form */
 .selected-seat-display {
-  background-color: #e9ecef;
+  background-color: var(--selected-seat-display-bg);
   padding: 15px;
   border-radius: 8px;
   border-left: 4px solid var(--mizzou-gold);
   margin-bottom: 20px;
+  transition: background-color 0.3s ease;
 }
 
 .price-display {
@@ -390,10 +526,210 @@ main {
 .empty-state {
   text-align: center;
   padding: 40px 20px;
-  color: #6c757d;
+  color: var(--empty-state-color);
 }
 
 .empty-state i {
   font-size: 3rem;
   margin-bottom: 15px;
+}
+
+/* =================================================================
+   Theme Toggle Button
+   ================================================================= */
+#theme-toggle {
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  transition: opacity 0.3s ease;
+  text-decoration: none;
+}
+
+#theme-toggle:hover {
+  opacity: 0.7;
+  background: transparent;
+  text-decoration: none;
+}
+
+#theme-toggle:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+/* =================================================================
+   Bootstrap Dark Mode Overrides
+   ================================================================= */
+
+/* Cards */
+[data-theme="dark"] .card {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-header {
+  background-color: var(--bg-elevated);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .card-body {
+  background-color: var(--bg-card);
+}
+
+/* Tables */
+[data-theme="dark"] .table {
+  --bs-table-bg: var(--bg-card);
+  --bs-table-striped-bg: var(--table-stripe);
+  --bs-table-hover-bg: var(--table-hover);
+  --bs-table-border-color: var(--table-border);
+  --bs-table-color: var(--text-primary);
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .table thead th {
+  border-bottom-color: var(--border-color);
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .table tbody td {
+  border-bottom-color: var(--border-color);
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .table tbody tr {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .table-striped tbody tr {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .table-striped tbody tr td {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover {
+  background-color: var(--table-hover);
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover td {
+  color: var(--text-primary) !important;
+}
+
+/* Forms */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+  background-color: var(--bg-input);
+  border-color: var(--border-input);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+  background-color: var(--bg-input);
+  border-color: var(--mizzou-gold);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-control::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+[data-theme="dark"] .form-text {
+  color: var(--text-secondary) !important;
+  opacity: 1;
+}
+
+/* Bootstrap Text Utilities */
+[data-theme="dark"] .text-muted {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .lead {
+  color: var(--text-primary) !important;
+}
+
+/* Small text */
+[data-theme="dark"] small,
+[data-theme="dark"] .small {
+  color: var(--text-secondary);
+}
+
+/* Alerts */
+[data-theme="dark"] .alert-warning {
+  background-color: var(--alert-warning-bg);
+  border-color: var(--alert-warning-border);
+  color: var(--alert-warning-text);
+}
+
+[data-theme="dark"] .alert-success {
+  background-color: #1e4a2f;
+  border-color: #2d6a45;
+  color: #4ade80;
+}
+
+[data-theme="dark"] .alert-danger {
+  background-color: #4a1010;
+  border-color: #6a2020;
+  color: #ef4444;
+}
+
+[data-theme="dark"] .alert-info {
+  background-color: #1e3a5f;
+  border-color: #2d5080;
+  color: #60a5fa;
+}
+
+/* Buttons */
+[data-theme="dark"] .btn-outline-dark {
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .btn-outline-dark:hover {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .btn-close {
+  filter: invert(1);
+}
+
+/* Navbar toggler */
+[data-theme="dark"] .navbar-toggler {
+  border-color: rgba(0, 0, 0, 0.3);
+}
+
+/* =================================================================
+   Pricing Table Row Classes (for index.html)
+   ================================================================= */
+.pricing-row-window {
+  background-color: #fff3cd;
+}
+
+.pricing-row-left-aisle {
+  background-color: #d1ecf1;
+}
+
+.pricing-row-right-aisle {
+  background-color: #d4edda;
+}
+
+[data-theme="dark"] .pricing-row-window {
+  background-color: #4a4010;
+}
+
+[data-theme="dark"] .pricing-row-left-aisle {
+  background-color: #1e3a5f;
+}
+
+[data-theme="dark"] .pricing-row-right-aisle {
+  background-color: #1e4a2f;
 }
