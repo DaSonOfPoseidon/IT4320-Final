@@ -158,8 +158,8 @@ def admin_dashboard():
     availability = get_seat_availability_grid()
     seat_names = get_seat_names_grid()
 
-    # Get all reservations sorted by creation date (newest first)
-    reservations = Reservation.query.order_by(Reservation.created.desc()).all()
+    # Get all reservations sorted by creation date (oldest first)
+    reservations = Reservation.query.order_by(Reservation.created.asc()).all()
 
     return render_template(
         "admin_dashboard.html",
@@ -256,6 +256,9 @@ def generate_ticket_number(passenger_name):
     Returns:
         str: E-ticket number based on passenger name
     """
+    # Remove all whitespace from name
+    passenger_name = passenger_name.replace(" ", "")
+
     separator_string = "INFOTC4320"
 
     # Start with first letter (uppercase)

@@ -56,82 +56,40 @@
     </div>
     <div class="card-body">
         <div class="seating-chart-container">
-            <!-- Front Zone (Rows 1-4) -->
-            <div class="zone zone-front">
-                <div class="zone-label">
-                    Front Zone - Rows 1-4
-                    <span class="zone-price">$30.00</span>
-                </div>
-                <div class="seating-chart">
-                    {% for row in range(1, 5) %}
-                        {% for col in range(1, 5) %}
-                            {% if availability is defined and availability[row-1][col-1] == False %}
-                                <div class="seat seat-reserved"
-                                     {% if seat_names is defined and seat_names[row-1][col-1] %}
-                                     title="{{ seat_names[row-1][col-1] }}"
-                                     {% endif %}>
-                                    {{ row }}-{{ col }}
-                                </div>
-                            {% else %}
-                                <div class="seat seat-available">
-                                    {{ row }}-{{ col }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    {% endfor %}
+            <!-- Pricing Legend -->
+            <div class="pricing-legend mb-3">
+                <h6 class="text-center mb-2">Seat Pricing</h6>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <div class="pricing-item">
+                        <span class="pricing-badge window-pricing">Window: $100</span>
+                    </div>
+                    <div class="pricing-item">
+                        <span class="pricing-badge left-aisle-pricing">Left Aisle: $75</span>
+                    </div>
+                    <div class="pricing-item">
+                        <span class="pricing-badge right-aisle-pricing">Right Aisle: $50</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Middle Zone (Rows 5-8) -->
-            <div class="zone zone-middle">
-                <div class="zone-label">
-                    Middle Zone - Rows 5-8
-                    <span class="zone-price">$20.00</span>
-                </div>
-                <div class="seating-chart">
-                    {% for row in range(5, 9) %}
-                        {% for col in range(1, 5) %}
-                            {% if availability is defined and availability[row-1][col-1] == False %}
-                                <div class="seat seat-reserved"
-                                     {% if seat_names is defined and seat_names[row-1][col-1] %}
-                                     title="{{ seat_names[row-1][col-1] }}"
-                                     {% endif %}>
-                                    {{ row }}-{{ col }}
-                                </div>
-                            {% else %}
-                                <div class="seat seat-available">
-                                    {{ row }}-{{ col }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+            <!-- Unified Seating Chart -->
+            <div class="seating-chart">
+                {% for row in range(1, 13) %}
+                    {% for col in range(1, 5) %}
+                        {% if availability is defined and availability[row-1][col-1] == False %}
+                            <div class="seat seat-reserved"
+                                 {% if seat_names is defined and seat_names[row-1][col-1] %}
+                                 title="{{ seat_names[row-1][col-1] }}"
+                                 {% endif %}>
+                                {{ row }}-{{ col }}
+                            </div>
+                        {% else %}
+                            <div class="seat seat-available">
+                                {{ row }}-{{ col }}
+                            </div>
+                        {% endif %}
                     {% endfor %}
-                </div>
-            </div>
-
-            <!-- Back Zone (Rows 9-12) -->
-            <div class="zone zone-back">
-                <div class="zone-label">
-                    Back Zone - Rows 9-12
-                    <span class="zone-price">$15.00</span>
-                </div>
-                <div class="seating-chart">
-                    {% for row in range(9, 13) %}
-                        {% for col in range(1, 5) %}
-                            {% if availability is defined and availability[row-1][col-1] == False %}
-                                <div class="seat seat-reserved"
-                                     {% if seat_names is defined and seat_names[row-1][col-1] %}
-                                     title="{{ seat_names[row-1][col-1] }}"
-                                     {% endif %}>
-                                    {{ row }}-{{ col }}
-                                </div>
-                            {% else %}
-                                <div class="seat seat-available">
-                                    {{ row }}-{{ col }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    {% endfor %}
-                </div>
+                {% endfor %}
             </div>
 
             <!-- Seat Legend -->
@@ -160,42 +118,18 @@
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
                         <tr>
-                            <th>ID</th>
                             <th>Passenger Name</th>
                             <th>Seat</th>
-                            <th>Zone</th>
-                            <th>Price</th>
                             <th>E-Ticket</th>
-                            <th>Created</th>
                             <th class="table-actions">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for reservation in reservations %}
                             <tr>
-                                <td>{{ reservation.id }}</td>
                                 <td>{{ reservation.passengerName }}</td>
                                 <td>Row {{ reservation.seatRow + 1 }}, Col {{ reservation.seatColumn + 1 }}</td>
-                                <td>
-                                    {% if reservation.seatColumn == 0 or reservation.seatColumn == 3 %}
-                                        <span class="badge bg-warning">Aisle</span>
-                                    {% elif reservation.seatColumn == 1 %}
-                                        <span class="badge bg-primary">Middle</span>
-                                    {% else %}
-                                        <span class="badge bg-success">Center</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if reservation.seatColumn == 0 or reservation.seatColumn == 3 %}
-                                        $100.00
-                                    {% elif reservation.seatColumn == 1 %}
-                                        $75.00
-                                    {% else %}
-                                        $50.00
-                                    {% endif %}
-                                </td>
                                 <td><code>{{ reservation.eTicketNumber }}</code></td>
-                                <td>{{ reservation.created.strftime('%Y-%m-%d %H:%M') if reservation.created else 'N/A' }}</td>
                                 <td class="table-actions">
                                     <form method="POST"
                                           action="{{ url_for('admin_delete', reservation_id=reservation.id) }}"

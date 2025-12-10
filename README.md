@@ -4,7 +4,7 @@ Flask web app for managing bus seat reservations (48 seats: 12 rows × 4 columns
 
 ## Features
 
-- Student seat reservation with zone-based pricing
+- Student seat reservation with column-based pricing
 - Admin dashboard with seating chart and sales tracking
 - E-ticket generation and reservation management
 
@@ -34,11 +34,11 @@ Visit `http://localhost:4320`
 - `/admin/dashboard` - Seating chart & sales
 - `/admin/delete/<id>` - Delete reservation
 
-## Pricing Zones
+## Seat Pricing
 
-- Rows 1-4: Premium ($30)
-- Rows 5-8: Standard ($20)
-- Rows 9-12: Economy ($15)
+- Columns 1 & 4 (Window): $100
+- Column 2 (Left Aisle): $75
+- Column 3 (Right Aisle): $50
 
 ## Development
 
