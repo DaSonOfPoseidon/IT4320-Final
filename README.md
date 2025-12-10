@@ -36,23 +36,43 @@ Visit `http://localhost:5000`
 
 ## Pricing Zones
 
-- Rows 1-4: Premium
-- Rows 5-8: Standard
-- Rows 9-12: Economy
+- Rows 1-4: Premium ($30)
+- Rows 5-8: Standard ($20)
+- Rows 9-12: Economy ($15)
 
 ## Development
 
 - Branch: `feature/<name>`, `bugfix/<name>`, `docs/<name>`
+- Code formatting: Black (100 char lines) & Ruff linting
 - Use # for comments, add docstrings, follow PEP 8
 - Update docs when adding features
 - Database is tracked in git (intentional)
 
-## To-Do
+### Code Quality Tools
 
-- [ ] HTML templates with Bootstrap 5
-- [ ] Reservation form + validation
-- [ ] Admin authentication
-- [ ] Seating chart visualization
-- [ ] E-ticket generation
-- [ ] Sales calculation
-- [ ] Reservation deletion
+```bash
+# Format code
+black --line-length 100 .
+
+# Lint code
+ruff check .
+ruff check --fix .
+```
+
+## Project Status
+
+### Completed ✅
+- [x] Core business logic (seat pricing, ticket generation, availability check, sales calculation)
+- [x] Database schema and SQLAlchemy models
+- [x] Code formatting tools (Black & Ruff)
+- [x] Documentation (README, CONTRIBUTING, TODO.md)
+- [x] HTML templates with Bootstrap 5 and Mizzou theming
+- [x] Responsive seating chart visualization (CSS Grid)
+- [x] Interactive seat selection with JavaScript
+- [x] Admin dashboard interface
+
+### To-Do
+- [ ] Backend route integration (render_template, POST handlers)
+- [ ] Admin authentication logic (session management)
+- [ ] Form validation and error handling
+- [ ] Database integration with templates
