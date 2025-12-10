@@ -177,21 +177,21 @@
                                 <td>{{ reservation.passengerName }}</td>
                                 <td>Row {{ reservation.seatRow + 1 }}, Col {{ reservation.seatColumn + 1 }}</td>
                                 <td>
-                                    {% if reservation.seatRow >= 0 and reservation.seatRow <= 3 %}
-                                        <span class="badge bg-success">Front</span>
-                                    {% elif reservation.seatRow >= 4 and reservation.seatRow <= 7 %}
+                                    {% if reservation.seatColumn == 0 or reservation.seatColumn == 3 %}
+                                        <span class="badge bg-warning">Aisle</span>
+                                    {% elif reservation.seatColumn == 1 %}
                                         <span class="badge bg-primary">Middle</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">Back</span>
+                                        <span class="badge bg-success">Center</span>
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if reservation.seatRow >= 0 and reservation.seatRow <= 3 %}
-                                        $30.00
-                                    {% elif reservation.seatRow >= 4 and reservation.seatRow <= 7 %}
-                                        $20.00
+                                    {% if reservation.seatColumn == 0 or reservation.seatColumn == 3 %}
+                                        $100.00
+                                    {% elif reservation.seatColumn == 1 %}
+                                        $75.00
                                     {% else %}
-                                        $15.00
+                                        $50.00
                                     {% endif %}
                                 </td>
                                 <td><code>{{ reservation.eTicketNumber }}</code></td>

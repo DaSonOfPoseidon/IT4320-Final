@@ -15,11 +15,11 @@ Flask web app for managing bus seat reservations (48 seats: 12 rows × 4 columns
 docker-compose up --build
 ```
 
-Visit `http://localhost:5000`
+Visit `http://localhost:4320`
 
 ## Tech Stack
 
-- Python 3.8+ | Flask | SQLAlchemy | SQLite | Bootstrap 5
+- Python 3.12 | Flask | SQLAlchemy | SQLite | Bootstrap 5 | Docker
 
 ## Database Schema
 
@@ -47,32 +47,3 @@ Visit `http://localhost:5000`
 - Use # for comments, add docstrings, follow PEP 8
 - Update docs when adding features
 - Database is tracked in git (intentional)
-
-### Code Quality Tools
-
-```bash
-# Format code
-black --line-length 100 .
-
-# Lint code
-ruff check .
-ruff check --fix .
-```
-
-## Project Status
-
-### Completed ✅
-- [x] Core business logic (seat pricing, ticket generation, availability check, sales calculation)
-- [x] Database schema and SQLAlchemy models
-- [x] Code formatting tools (Black & Ruff)
-- [x] Documentation (README, CONTRIBUTING, TODO.md)
-- [x] HTML templates with Bootstrap 5 and Mizzou theming
-- [x] Responsive seating chart visualization (CSS Grid)
-- [x] Interactive seat selection with JavaScript
-- [x] Admin dashboard interface
-
-### To-Do
-- [ ] Backend route integration (render_template, POST handlers)
-- [ ] Admin authentication logic (session management)
-- [ ] Form validation and error handling
-- [ ] Database integration with templates

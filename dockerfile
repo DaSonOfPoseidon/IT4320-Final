@@ -5,19 +5,12 @@ FROM python:3.12-slim
 WORKDIR /app
 
 
-# Environment variables 
+# Environment variables
 # Prevents Python from writing pyc files to disc
 ENV PYTHONDONTWRITEBYTECODE=1
 # Prevents Python from buffering stdout and stderr
 ENV PYTHONUNBUFFERED=1
 ENV FLASK_APP=app.py
-ENV FLASK_ENV=production
-
-# Install system dependencies (if needed)
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
 COPY requirements.txt .
@@ -36,7 +29,7 @@ EXPOSE 5000
 
 # Health check to ensure container is running
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:5000/', timeout=5)" || exit 1
+    CMD curl --fail http://localhost:5000/ || exit 1
 
 
 # Command to run the app
