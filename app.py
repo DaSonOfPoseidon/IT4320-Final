@@ -4,7 +4,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import random
 import os
 
 # Initialize Flask app
@@ -91,7 +90,7 @@ def reserve():
             return redirect(url_for("reserve"))
 
         # Generate ticket and create reservation (store as 0-based in database)
-        ticket_number = generate_ticket_number()
+        ticket_number = generate_ticket_number(passenger_name)
         new_reservation = Reservation(
             passengerName=passenger_name,
             seatRow=seat_row,
@@ -234,23 +233,36 @@ def calculate_seat_price(row):
         return 15.0  # Back zone (rows 8-11)
 
 
-def generate_ticket_number():
+def generate_ticket_number(passenger_name):
     """
-    Generate a unique e-ticket number
+    Generate e-ticket number based on passenger name
+
+    Pattern: Interleave passenger name letters with "INFOTC4320"
+    Example: "Alice" -> AIlNiFcOeTC4320
+
+    Args:
+        passenger_name (str): Passenger's full name
 
     Returns:
-        str: Unique ticket number (e.g., HACK-1234-5678)
+        str: E-ticket number based on passenger name
     """
-    while True:
-        # Generate two 4-digit random numbers
-        part1 = random.randint(1000, 9999)
-        part2 = random.randint(1000, 9999)
-        ticket = f"HACK-{part1}-{part2}"
+    separator_string = "INFOTC4320"
 
-        # Check if ticket number already exists in database
-        existing = Reservation.query.filter_by(eTicketNumber=ticket).first()
-        if not existing:
-            return ticket
+    # Start with first letter (uppercase)
+    ticket = passenger_name[0].upper()
+
+    # Get remaining letters (lowercase)
+    remaining_letters = passenger_name[1:].lower()
+
+    # Interleave remaining letters with separator string
+    max_length = max(len(remaining_letters), len(separator_string))
+    for i in range(max_length):
+        if i < len(separator_string):
+            ticket += separator_string[i]
+        if i < len(remaining_letters):
+            ticket += remaining_letters[i]
+
+    return ticket
 
 
 def is_seat_available(row, column):
