@@ -76,7 +76,7 @@ def reserve():
             # Convert to 0-based indexing for database
             seat_row = seat_row_display - 1
             seat_column = seat_column_display - 1
-        except (ValueError, TypeError):
+        except:
             flash("Invalid seat selection. Please select a seat.", "danger")
             return redirect(url_for("reserve"))
 
@@ -89,24 +89,16 @@ def reserve():
             )
             return redirect(url_for("reserve"))
 
-        # Generate ticket and create reservation (store as 0-based in database)
-        ticket_number = generate_ticket_number(passenger_name)
-        new_reservation = Reservation(
-            passengerName=passenger_name,
-            seatRow=seat_row,
-            seatColumn=seat_column,
-            eTicketNumber=ticket_number,
-        )
+        reservation, error = create_reservation(passenger_name, seat_row, seat_column)
+        if error:
+            flash(error, "danger")
+            return redirect(url_for("reserve"))
 
-        db.session.add(new_reservation)
-        db.session.commit()
-
-        # Calculate price for confirmation message (using 0-based row and column)
         price = calculate_seat_price(seat_row, seat_column)
 
         flash(
             f"Reservation successful! {passenger_name}, your seat {seat_row_display}-{seat_column_display} "
-            f"(${price:.2f}) is confirmed. E-Ticket: {ticket_number}",
+            f"(${price:.2f}) is confirmed. E-Ticket: {reservation.eTicketNumber}",
             "success",
         )
         return redirect(url_for("index"))
@@ -114,6 +106,7 @@ def reserve():
     # GET request - show form
     availability = get_seat_availability_grid()
     return render_template("reserve.html", availability=availability)
+
 
 
 @app.route("/admin", methods=["GET", "POST"])
@@ -150,7 +143,8 @@ def admin_dashboard():
 
     # Calculate statistics
     total_seats = 48
-    reserved_count = Reservation.query.count()
+    reserved_list = get_all_reservations()
+    reserved_count = len(reserved_list)
     available_count = total_seats - reserved_count
     total_sales = get_total_sales()
 
@@ -158,8 +152,7 @@ def admin_dashboard():
     availability = get_seat_availability_grid()
     seat_names = get_seat_names_grid()
 
-    # Get all reservations sorted by creation date (oldest first)
-    reservations = Reservation.query.order_by(Reservation.created.asc()).all()
+    reservations = sorted(reserved_list, key=lambda r: r.created)
 
     return render_template(
         "admin_dashboard.html",
@@ -173,6 +166,7 @@ def admin_dashboard():
     )
 
 
+
 @app.route("/admin/delete/<int:reservation_id>", methods=["POST"])
 def admin_delete(reservation_id):
     """Delete a reservation"""
@@ -181,21 +175,21 @@ def admin_delete(reservation_id):
         flash("Please log in to access the admin dashboard.", "warning")
         return redirect(url_for("admin"))
 
-    # Find and delete reservation
-    reservation = Reservation.query.get(reservation_id)
+    reservation = get_reservation_by_id(reservation_id)
 
     if reservation:
         passenger = reservation.passengerName
         seat = f"{reservation.seatRow}-{reservation.seatColumn}"
-
-        db.session.delete(reservation)
-        db.session.commit()
-
-        flash(f"Reservation for {passenger} (Seat {seat}) has been deleted.", "success")
+        success, error = delete_reservation(reservation_id)
+        if success:
+            flash(f"Reservation for {passenger} (Seat {seat}) has been deleted.", "success")
+        else:
+            flash(error, "danger")
     else:
         flash("Reservation not found.", "danger")
 
     return redirect(url_for("admin_dashboard"))
+
 
 
 @app.route("/admin/logout")
