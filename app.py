@@ -320,124 +320,274 @@ def get_total_sales():
 
     return total
 
+# ============================================================================
+# DATABASE INITIALIZATION
+# ============================================================================
+
+def init_database():
+    """Initialize database with tables and default admin"""
+    with app.app_context():
+        db.create_all()
+        
+        # Create default admin if none exists
+        if Admin.query.count() == 0:
+            default_admin = Admin(username="admin", password="password")
+            db.session.add(default_admin)
+            db.session.commit()
+            print("Default admin created: username='admin', password='password'")
+            print("IMPORTANT: Change this password in production!")
+
 # =============================================================================================
 #   Database operations
 # =============================================================================================
 
-def create_reservation(first_name, last_name, seat_row, seat_column):
+def create_reservation(passenger_name, seat_row, seat_column):
     """
     Create a new reservation (CREATE operation)
     
+    Args:
+        passenger_name (str): Full name of passenger
+        seat_row (int): Seat row (0-11, 0-based index)
+        seat_column (int): Seat column (0-3, 0-based index)
+    
     Returns:
-        tuple: (reservation, error_message) - reservation is None if error occurred
+        tuple: (reservation, error_message)
+            - reservation: Reservation object if successful, None if error
+            - error_message: None if successful, error string if error
     """
-    # Validate input
-    if not first_name or not last_name:
-        return None, "First name and last name are required"
-    
-    if not (1 <= seat_row <= 12 and 1 <= seat_column <= 4):
-        return None, "Invalid seat position"
-    
-    # Check seat availability
-    if not is_seat_available(seat_row, seat_column):
-        return None, "Seat already reserved"
-    
-    # Create reservation
-    passenger_name = f"{first_name} {last_name}"
-    ticket_number = generate_ticket_number()
-    
-    reservation = Reservation(
-        passengerName=passenger_name,
-        seatRow=seat_row,
-        seatColumn=seat_column,
-        eTicketNumber=ticket_number
-    )
-    
     try:
+        # Validate passenger name
+        if not passenger_name or not isinstance(passenger_name, str):
+            return None, "Passenger name is required"
+        
+        passenger_name = passenger_name.strip()
+        
+        if len(passenger_name) < 2:
+            return None, "Passenger name must be at least 2 characters"
+        
+        if len(passenger_name) > 100:
+            return None, "Passenger name must be less than 100 characters"
+        
+        # Validate seat position (0-based indexing)
+        if not isinstance(seat_row, int) or not isinstance(seat_column, int):
+            return None, "Seat row and column must be integers"
+        
+        if not (0 <= seat_row <= 11):
+            return None, "Seat row must be between 0 and 11"
+        
+        if not (0 <= seat_column <= 3):
+            return None, "Seat column must be between 0 and 3"
+        
+        # Check seat availability
+        if not is_seat_available(seat_row, seat_column):
+            return None, f"Seat {seat_row}-{seat_column} is already reserved"
+        
+        # Generate unique ticket number
+        ticket_number = generate_ticket_number(passenger_name)
+        
+        # Ensure ticket number is unique (edge case: similar names)
+        counter = 1
+        original_ticket = ticket_number
+        while Reservation.query.filter_by(eTicketNumber=ticket_number).first():
+            ticket_number = f"{original_ticket}{counter}"
+            counter += 1
+        
+        # Create reservation object
+        reservation = Reservation(
+            passengerName=passenger_name,
+            seatRow=seat_row,
+            seatColumn=seat_column,
+            eTicketNumber=ticket_number
+        )
+        
+        # Save to database
         db.session.add(reservation)
         db.session.commit()
+        
         return reservation, None
+        
+    except ValueError as e:
+        db.session.rollback()
+        return None, f"Validation error: {str(e)}"
     except Exception as e:
         db.session.rollback()
-        return None, str(e)
+        return None, f"Database error: {str(e)}"
 
 
 def get_all_reservations():
     """
     Retrieve all reservations (READ operation)
-    Returns: list of Reservation objects
+    
+    Returns:
+        list: List of Reservation objects ordered by creation date (newest first)
     """
-    return Reservation.query.order_by(Reservation.created.desc()).all()
+    try:
+        return Reservation.query.order_by(Reservation.created.desc()).all()
+    except Exception as e:
+        print(f"Error retrieving reservations: {e}")
+        return []
 
 
 def get_reservation_by_id(reservation_id):
     """
     Get a specific reservation by ID (READ operation)
-    Returns: Reservation object or None
+    
+    Args:
+        reservation_id (int): Primary key of reservation
+    
+    Returns:
+        Reservation: Reservation object or None if not found
     """
-    return Reservation.query.get(reservation_id)
+    try:
+        if not isinstance(reservation_id, int) or reservation_id < 1:
+            return None
+        return Reservation.query.get(reservation_id)
+    except Exception as e:
+        print(f"Error retrieving reservation {reservation_id}: {e}")
+        return None
 
 
 def delete_reservation(reservation_id):
     """
     Delete a reservation by ID (DELETE operation)
     
+    Args:
+        reservation_id (int): Primary key of reservation to delete
+    
     Returns:
         tuple: (success, error_message)
+            - success: True if deleted, False if error
+            - error_message: None if successful, error string if error
     """
-    reservation = Reservation.query.get(reservation_id)
-    if not reservation:
-        return False, "Reservation not found"
-    
     try:
+        # Validate input
+        if not isinstance(reservation_id, int) or reservation_id < 1:
+            return False, "Invalid reservation ID"
+        
+        # Find reservation
+        reservation = Reservation.query.get(reservation_id)
+        
+        if not reservation:
+            return False, "Reservation not found"
+        
+        # Delete from database
         db.session.delete(reservation)
         db.session.commit()
+        
         return True, None
+        
     except Exception as e:
         db.session.rollback()
-        return False, str(e)
+        return False, f"Database error: {str(e)}"
+
+
+def is_seat_available(row, column):
+    """
+    Check if a seat is available for reservation
+    
+    Args:
+        row (int): Seat row (0-11, 0-based index)
+        column (int): Seat column (0-3, 0-based index)
+    
+    Returns:
+        bool: True if available, False if taken or invalid
+    """
+    try:
+        # Input validation
+        if not isinstance(row, int) or not isinstance(column, int):
+            return False
+        
+        if row < 0 or row > 11:
+            return False
+        
+        if column < 0 or column > 3:
+            return False
+
+        # Check if seat is already reserved
+        reservation = Reservation.query.filter_by(seatRow=row, seatColumn=column).first()
+        return reservation is None
+        
+    except Exception as e:
+        print(f"Error checking seat availability: {e}")
+        return False
+
+
+def get_total_sales():
+    """
+    Calculate total sales from all reservations
+    
+    Returns:
+        float: Total sales amount
+    """
+    try:
+        total = 0.0
+        reservations = Reservation.query.all()
+        
+        for reservation in reservations:
+            # Validate indices before calculating price
+            if 0 <= reservation.seatRow <= 11 and 0 <= reservation.seatColumn <= 3:
+                price = calculate_seat_price(reservation.seatRow, reservation.seatColumn)
+                total += price
+        
+        return total
+        
+    except Exception as e:
+        print(f"Error calculating total sales: {e}")
+        return 0.0
 
 
 def get_seat_availability_grid():
     """
     Build a 12×4 grid showing seat availability status
-
+    
     Returns:
         list: 2D list where availability[row][col] is True (available) or False (reserved)
               Uses 0-based indexing (row 0-11, col 0-3)
     """
-    # Initialize all seats as available
-    availability = [[True for _ in range(4)] for _ in range(12)]
+    try:
+        # Initialize all seats as available
+        availability = [[True for _ in range(4)] for _ in range(12)]
 
-    # Mark reserved seats (database uses 0-based indexing)
-    reservations = Reservation.query.all()
-    for reservation in reservations:
-        # Validate indices before using them
-        if 0 <= reservation.seatRow <= 11 and 0 <= reservation.seatColumn <= 3:
-            availability[reservation.seatRow][reservation.seatColumn] = False
+        # Mark reserved seats
+        reservations = Reservation.query.all()
+        for reservation in reservations:
+            # Validate indices before using them
+            if 0 <= reservation.seatRow <= 11 and 0 <= reservation.seatColumn <= 3:
+                availability[reservation.seatRow][reservation.seatColumn] = False
 
-    return availability
+        return availability
+        
+    except Exception as e:
+        print(f"Error building availability grid: {e}")
+        # Return all available on error
+        return [[True for _ in range(4)] for _ in range(12)]
 
 
 def get_seat_names_grid():
     """
     Build a 12×4 grid showing passenger names for reserved seats
-
+    
     Returns:
         list: 2D list where seat_names[row][col] is passenger name or None
               Uses 0-based indexing (row 0-11, col 0-3)
     """
-    # Initialize empty grid
-    seat_names = [[None for _ in range(4)] for _ in range(12)]
+    try:
+        # Initialize empty grid
+        seat_names = [[None for _ in range(4)] for _ in range(12)]
 
-    # Fill in passenger names (database uses 0-based indexing)
-    reservations = Reservation.query.all()
-    for reservation in reservations:
-        # Validate indices before using them
-        if 0 <= reservation.seatRow <= 11 and 0 <= reservation.seatColumn <= 3:
-            seat_names[reservation.seatRow][reservation.seatColumn] = reservation.passengerName
+        # Fill in passenger names
+        reservations = Reservation.query.all()
+        for reservation in reservations:
+            # Validate indices before using them
+            if 0 <= reservation.seatRow <= 11 and 0 <= reservation.seatColumn <= 3:
+                seat_names[reservation.seatRow][reservation.seatColumn] = reservation.passengerName
 
-    return seat_names
+        return seat_names
+        
+    except Exception as e:
+        print(f"Error building seat names grid: {e}")
+        # Return empty grid on error
+        return [[None for _ in range(4)] for _ in range(12)]
 
 
 # Run the application
