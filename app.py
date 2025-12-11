@@ -320,6 +320,83 @@ def get_total_sales():
 
     return total
 
+# =============================================================================================
+#   Database operations
+# =============================================================================================
+
+def create_reservation(first_name, last_name, seat_row, seat_column):
+    """
+    Create a new reservation (CREATE operation)
+    
+    Returns:
+        tuple: (reservation, error_message) - reservation is None if error occurred
+    """
+    # Validate input
+    if not first_name or not last_name:
+        return None, "First name and last name are required"
+    
+    if not (1 <= seat_row <= 12 and 1 <= seat_column <= 4):
+        return None, "Invalid seat position"
+    
+    # Check seat availability
+    if not is_seat_available(seat_row, seat_column):
+        return None, "Seat already reserved"
+    
+    # Create reservation
+    passenger_name = f"{first_name} {last_name}"
+    ticket_number = generate_ticket_number()
+    
+    reservation = Reservation(
+        passengerName=passenger_name,
+        seatRow=seat_row,
+        seatColumn=seat_column,
+        eTicketNumber=ticket_number
+    )
+    
+    try:
+        db.session.add(reservation)
+        db.session.commit()
+        return reservation, None
+    except Exception as e:
+        db.session.rollback()
+        return None, str(e)
+
+
+def get_all_reservations():
+    """
+    Retrieve all reservations (READ operation)
+    Returns: list of Reservation objects
+    """
+    return Reservation.query.order_by(Reservation.created.desc()).all()
+
+
+def get_reservation_by_id(reservation_id):
+    """
+    Get a specific reservation by ID (READ operation)
+    Returns: Reservation object or None
+    """
+    return Reservation.query.get(reservation_id)
+
+
+def delete_reservation(reservation_id):
+    """
+    Delete a reservation by ID (DELETE operation)
+    
+    Returns:
+        tuple: (success, error_message)
+    """
+    reservation = Reservation.query.get(reservation_id)
+    if not reservation:
+        return False, "Reservation not found"
+    
+    try:
+        db.session.delete(reservation)
+        db.session.commit()
+        return True, None
+    except Exception as e:
+        db.session.rollback()
+        return False, str(e)
+
 
 def get_seat_availability_grid():
     """
