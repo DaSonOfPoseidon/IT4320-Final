@@ -8,4 +8,4 @@ services:
       - .:/app
     environment:
       - FLASK_DEBUG=0
-      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      - SECRET_KEY=${SECRET_KEY:-hellodarknessmyoldfriend}

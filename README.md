@@ -7,6 +7,7 @@ Flask web app for managing bus seat reservations (48 seats: 12 rows × 4 columns
 - Student seat reservation with column-based pricing
 - Admin dashboard with seating chart and sales tracking
 - E-ticket generation and reservation management
+- Responsive, JS-backed page features (idk if that was allowed but I couldn't figure it out in python)
 
 ## Quick Start
 
@@ -30,9 +31,10 @@ Visit `http://localhost:4320`
 
 - `/` - Main menu
 - `/reserve` - Reservation form
-- `/admin/login` - Admin login
+- `/admin` - Admin login
 - `/admin/dashboard` - Seating chart & sales
 - `/admin/delete/<id>` - Delete reservation
+- `/admin/logout` - Admin logout
 
 ## Seat Pricing
 
